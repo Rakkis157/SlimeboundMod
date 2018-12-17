@@ -22,7 +22,7 @@ import slimebound.vfx.DoubleSlimeParticle;
 
 
 public class DuplicatedFormPower extends AbstractPower {
-    public static final String POWER_ID = "DuplicatedFormPower";
+    public static final String POWER_ID = "Slimebound:DuplicatedFormPower";
     public static final String NAME = "Potency";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/DuplicatedEchoS.png";
@@ -76,6 +76,7 @@ public class DuplicatedFormPower extends AbstractPower {
     }
 
     public void onInitialApplication() {
+        SlimeboundMod.spritealtered=true;
         AbstractPlayer p = AbstractDungeon.player;
 
         for (AbstractOrb o : AbstractDungeon.player.orbs) {
@@ -90,13 +91,17 @@ public class DuplicatedFormPower extends AbstractPower {
         if (p instanceof SlimeboundCharacter) {
             SlimeboundCharacter hero = (SlimeboundCharacter) p;
             hero.setRenderscale(1.5F);
-        } else {
+        }
             p.hb_x = p.hb_x + (100 * Settings.scale);
             p.drawX = p.drawX - (100 * Settings.scale);
             p.hb.cX = p.hb.cX + (100 * Settings.scale);
 
-        }
+
+
     }
+
+
+
 
     public void onUseCard(AbstractCard card, UseCardAction action) {
         if ((!card.purgeOnUse) && (this.amount > 0) && (card.target == AbstractCard.CardTarget.ENEMY || card.target == AbstractCard.CardTarget.ALL_ENEMY) && this.cardsDoubledThisTurn < this.amount) {

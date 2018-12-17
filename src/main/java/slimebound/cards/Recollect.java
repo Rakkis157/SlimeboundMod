@@ -16,7 +16,7 @@ import slimebound.patches.AbstractCardEnum;
 
 
 public class Recollect extends AbstractSlimeboundCard {
-    public static final String ID = "Recollect";
+    public static final String ID = "Slimebound:Recollect";
     public static final String NAME;
     private static final CardStrings cardStrings;
     public static final String DESCRIPTION;
@@ -71,10 +71,10 @@ public class Recollect extends AbstractSlimeboundCard {
     public void upgrade() {
         if (!this.upgraded) {
             upgradeName();
-            upgradeBlock(2);
-            upgradeMagicNumber(1);
-            this.rawDescription = UPGRADED_DESCRIPTION;
-            this.initializeDescription();
+            upgradeBlock(3);
+            //upgradeMagicNumber(1);
+           // this.rawDescription = UPGRADED_DESCRIPTION;
+            //this.initializeDescription();
 
 
         }

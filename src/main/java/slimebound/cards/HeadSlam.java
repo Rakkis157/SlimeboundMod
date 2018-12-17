@@ -18,7 +18,7 @@ import slimebound.SlimeboundMod;
 
 
 public class HeadSlam extends AbstractSlimeboundCard {
-    public static final String ID = "HeadSlam";
+    public static final String ID = "Slimebound:HeadSlam";
     public static final String NAME;
     public static final String DESCRIPTION;
     public static String UPGRADED_DESCRIPTION;
@@ -36,7 +36,8 @@ public class HeadSlam extends AbstractSlimeboundCard {
     public HeadSlam() {
 
         super(ID, NAME, SlimeboundMod.getResourcePath(IMG_PATH), COST, DESCRIPTION, TYPE, CardColor.COLORLESS, RARITY, TARGET);
-
+        tags.add(SlimeboundMod.STUDY_TIMEEATER);
+        tags.add(SlimeboundMod.STUDY);
 
         this.baseDamage = 12;
 

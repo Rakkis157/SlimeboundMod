@@ -12,7 +12,7 @@ import slimebound.actions.RandomHexaghostCardAction;
 
 
 public class StudyHexaghostPowerUpgraded extends AbstractPower {
-    public static final String POWER_ID = "StudyHexaghostPowerUpgraded";
+    public static final String POWER_ID = "Slimebound:StudyHexaghostPowerUpgraded";
     public static final String NAME = "Potency";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/StudyHexaghostS.png";
@@ -52,9 +52,9 @@ public class StudyHexaghostPowerUpgraded extends AbstractPower {
 
 
         if (this.amount == 1) {
-            this.description = DESCRIPTIONS[0] + this.amount + DESCRIPTIONS[1];
+            this.description = DESCRIPTIONS[0];
         } else {
-            this.description = (DESCRIPTIONS[0] + this.amount + DESCRIPTIONS[2]);
+            this.description = (DESCRIPTIONS[1] + this.amount + DESCRIPTIONS[2]);
         }
 
 
@@ -66,7 +66,15 @@ public class StudyHexaghostPowerUpgraded extends AbstractPower {
         flash();
 
         AbstractDungeon.actionManager.addToBottom(new RandomHexaghostCardAction(true));
+        if (this.amount <= 1) {
 
+            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, StudyHexaghostPowerUpgraded.POWER_ID));
+
+        } else {
+
+            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.ReducePowerAction(this.owner, this.owner, StudyHexaghostPowerUpgraded.POWER_ID, 1));
+
+        }
 
     }
 

@@ -12,7 +12,7 @@ import slimebound.actions.RandomGuardianCardAction;
 
 
 public class StudyGuardianPower extends AbstractPower {
-    public static final String POWER_ID = "StudyGuardianPower";
+    public static final String POWER_ID = "Slimebound:StudyGuardianPower";
     public static final String NAME = "Potency";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/StudyGuardianS.png";
@@ -68,11 +68,11 @@ public class StudyGuardianPower extends AbstractPower {
         AbstractDungeon.actionManager.addToBottom(new RandomGuardianCardAction(false));
         if (this.amount <= 1) {
 
-            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, "StudyGuardianPower"));
+            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, StudyGuardianPower.POWER_ID));
 
         } else {
 
-            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.ReducePowerAction(this.owner, this.owner, "StudyGuardianPower", 1));
+            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.ReducePowerAction(this.owner, this.owner, StudyGuardianPower.POWER_ID, 1));
 
         }
 

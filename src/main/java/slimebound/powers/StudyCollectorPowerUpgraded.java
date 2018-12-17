@@ -12,7 +12,7 @@ import slimebound.actions.RandomCollectorCardAction;
 
 
 public class StudyCollectorPowerUpgraded extends AbstractPower {
-    public static final String POWER_ID = "StudyCollectorPowerUpgraded";
+    public static final String POWER_ID = "Slimebound:StudyCollectorPowerUpgraded";
     public static final String NAME = "Potency";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/StudyCollectorS.png";
@@ -52,9 +52,9 @@ public class StudyCollectorPowerUpgraded extends AbstractPower {
 
 
         if (this.amount == 1) {
-            this.description = DESCRIPTIONS[0] + this.amount + DESCRIPTIONS[1];
+            this.description = DESCRIPTIONS[0];
         } else {
-            this.description = (DESCRIPTIONS[0] + this.amount + DESCRIPTIONS[2]);
+            this.description = (DESCRIPTIONS[1] + this.amount + DESCRIPTIONS[2]);
         }
 
 
@@ -67,7 +67,15 @@ public class StudyCollectorPowerUpgraded extends AbstractPower {
 
         AbstractDungeon.actionManager.addToBottom(new RandomCollectorCardAction(true));
 
+        if (this.amount <= 1) {
 
+            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, StudyCollectorPowerUpgraded.POWER_ID));
+
+        } else {
+
+            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.ReducePowerAction(this.owner, this.owner, StudyCollectorPowerUpgraded.POWER_ID, 1));
+
+        }
     }
 
 

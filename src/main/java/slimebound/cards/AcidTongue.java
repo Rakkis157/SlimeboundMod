@@ -12,10 +12,11 @@ import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import slimebound.SlimeboundMod;
 import slimebound.patches.AbstractCardEnum;
 import slimebound.powers.AcidTonguePower;
+import slimebound.powers.AcidTonguePowerUpgraded;
 
 
 public class AcidTongue extends AbstractSlimeboundCard {
-    public static final String ID = "AcidTongue";
+    public static final String ID = "Slimebound:AcidTongue";
 
     private static final CardStrings cardStrings;
     public static final String NAME;
@@ -26,7 +27,7 @@ public class AcidTongue extends AbstractSlimeboundCard {
     private static final CardRarity RARITY = CardRarity.RARE;
     private static final CardTarget TARGET = CardTarget.SELF;
 
-    private static final int COST = 1;
+    private static final int COST = 2;
 
     private static int upgradedamount = 1;
 
@@ -38,7 +39,14 @@ public class AcidTongue extends AbstractSlimeboundCard {
     }
 
     public void use(AbstractPlayer p, AbstractMonster m) {
+
+
         AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new AcidTonguePower(p, p, this.magicNumber), this.magicNumber));
+
+        if (upgraded)  AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new AcidTonguePowerUpgraded(p, p, this.magicNumber), this.magicNumber));
+
+
+
 
     }
 
@@ -50,9 +58,9 @@ public class AcidTongue extends AbstractSlimeboundCard {
     public void upgrade() {
         if (!this.upgraded) {
             upgradeName();
-            this.isInnate=true;
             this.rawDescription = UPGRADED_DESCRIPTION;
             this.initializeDescription();
+
 
 
         }

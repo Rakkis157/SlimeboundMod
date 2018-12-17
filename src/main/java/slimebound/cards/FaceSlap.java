@@ -17,7 +17,7 @@ import slimebound.SlimeboundMod;
 
 
 public class FaceSlap extends AbstractSlimeboundCard {
-    public static final String ID = "FaceSlap";
+    public static final String ID = "Slimebound:FaceSlap";
     public static final String NAME;
     public static final String DESCRIPTION;
     public static String UPGRADED_DESCRIPTION;
@@ -35,7 +35,8 @@ public class FaceSlap extends AbstractSlimeboundCard {
     public FaceSlap() {
 
         super(ID, NAME, SlimeboundMod.getResourcePath(IMG_PATH), COST, DESCRIPTION, TYPE, CardColor.COLORLESS, RARITY, TARGET);
-
+        tags.add(SlimeboundMod.STUDY_CHAMP);
+        tags.add(SlimeboundMod.STUDY);
 
         this.baseDamage = 14;
         this.magicNumber = this.baseMagicNumber = 2;

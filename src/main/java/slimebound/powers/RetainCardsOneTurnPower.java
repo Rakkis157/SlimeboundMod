@@ -15,7 +15,7 @@ import slimebound.SlimeboundMod;
 
 public class RetainCardsOneTurnPower extends AbstractPower
  {
-    public static final String POWER_ID = "RetainCardsOneTurnPower";
+    public static final String POWER_ID = "Slimebound:RetainCardsOneTurnPower";
     public static final String NAME = "Potency";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/retaingreen.png";
@@ -62,7 +62,7 @@ public class RetainCardsOneTurnPower extends AbstractPower
      if ((isPlayer) && (!AbstractDungeon.player.hand.isEmpty()) && (!AbstractDungeon.player.hasRelic("Runic Pyramid")) &&
        (!AbstractDungeon.player.hasPower("Equilibrium"))) {
        AbstractDungeon.actionManager.addToBottom(new RetainCardsAction(this.owner, this.amount));
-       AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, "RetainCardsOneTurnPower"));
+       AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, RetainCardsOneTurnPower.POWER_ID));
 
      }
    }

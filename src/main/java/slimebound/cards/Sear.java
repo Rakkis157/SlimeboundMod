@@ -12,12 +12,14 @@ import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.localization.CardStrings;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
+
 import slimebound.SlimeboundMod;
 import slimebound.powers.SearingPower;
+import slimebound.vfx.SearEffect;
 
 
 public class Sear extends AbstractSlimeboundCard {
-    public static final String ID = "Sear";
+    public static final String ID = "Slimebound:Sear";
     public static final String NAME;
     public static final String DESCRIPTION;
     public static String UPGRADED_DESCRIPTION;
@@ -36,9 +38,10 @@ public class Sear extends AbstractSlimeboundCard {
 
         super(ID, NAME, SlimeboundMod.getResourcePath(IMG_PATH), COST, DESCRIPTION, TYPE, CardColor.COLORLESS, RARITY, TARGET);
 
-
-        this.baseDamage = 8;
-        this.magicNumber = this.baseMagicNumber = 2;
+        tags.add(SlimeboundMod.STUDY_HEXAGHOST);
+        tags.add(SlimeboundMod.STUDY);
+        this.baseDamage = 11;
+        this.magicNumber = this.baseMagicNumber = 3;
 
         this.exhaust = true;
         this.isEthereal = true;
@@ -47,7 +50,8 @@ public class Sear extends AbstractSlimeboundCard {
 
 
     public void use(AbstractPlayer p, AbstractMonster m) {
-        AbstractDungeon.actionManager.addToBottom(new VFXAction(new com.megacrit.cardcrawl.vfx.combat.FireballEffect(p.hb.cX, p.hb.cY, m.hb.cX, m.hb.cY), 0.8F));
+        AbstractDungeon.actionManager.addToBottom(new VFXAction(new SearEffect(p.hb.cX, p.hb.cY, m.hb.cX, m.hb.cY), 0.4F));
+
         AbstractDungeon.actionManager.addToBottom(new DamageAction(m, new com.megacrit.cardcrawl.cards.DamageInfo(p, this.damage, this.damageTypeForTurn), AbstractGameAction.AttackEffect.FIRE));
         AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, p, new SearingPower(m, p, this.magicNumber), this.magicNumber, true, AbstractGameAction.AttackEffect.FIRE));
 

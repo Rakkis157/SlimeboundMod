@@ -28,7 +28,7 @@ import slimebound.vfx.TinyHatParticle;
 
 
 public class DuplicatedForm extends AbstractSlimeboundCard {
-    public static final String ID = "DuplicatedForm";
+    public static final String ID = "Slimebound:DuplicatedForm";
 
     private static final CardStrings cardStrings;
     public static final String NAME;
@@ -38,6 +38,7 @@ public class DuplicatedForm extends AbstractSlimeboundCard {
     private static final CardType TYPE = CardType.POWER;
     private static final CardRarity RARITY = CardRarity.RARE;
     private static final CardTarget TARGET = CardTarget.SELF;
+    public static String UPGRADED_DESCRIPTION;
 
     private static final int COST = 3;
 
@@ -91,6 +92,9 @@ public class DuplicatedForm extends AbstractSlimeboundCard {
             upgradeName();
             upgradeMagicNumber(1);
 
+            this.rawDescription = UPGRADED_DESCRIPTION;
+            this.initializeDescription();
+
 
         }
     }
@@ -100,6 +104,8 @@ public class DuplicatedForm extends AbstractSlimeboundCard {
         cardStrings = CardCrawlGame.languagePack.getCardStrings(ID);
         NAME = cardStrings.NAME;
         DESCRIPTION = cardStrings.DESCRIPTION;
+        UPGRADED_DESCRIPTION = cardStrings.UPGRADE_DESCRIPTION;
+
         EXTENDED_DESCRIPTION = cardStrings.EXTENDED_DESCRIPTION;
     }
 }

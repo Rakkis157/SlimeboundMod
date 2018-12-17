@@ -11,10 +11,11 @@ import com.megacrit.cardcrawl.powers.AbstractPower;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimebound.SlimeboundMod;
+import slimebound.cards.SlimeCrush;
 
 
 public class NextTurnGainSlimeCrush extends AbstractPower {
-    public static final String POWER_ID = "NextTurnGainSlimeCrush";
+    public static final String POWER_ID = "Slimebound:NextTurnGainSlimeCrush";
     public static final String NAME = "Potency";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/PrepareCardS.png";
@@ -67,10 +68,10 @@ public class NextTurnGainSlimeCrush extends AbstractPower {
 
         flash();
         AbstractCard c;
-        c = CardLibrary.getCard("SlimeCrush").makeCopy();
+        c = CardLibrary.getCard(SlimeCrush.ID).makeCopy();
 
         AbstractDungeon.actionManager.addToBottom(new MakeTempCardInHandAction(c, this.amount));
-        AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, "NextTurnGainSlimeCrush"));
+        AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, NextTurnGainSlimeCrush.POWER_ID));
 
     }
 

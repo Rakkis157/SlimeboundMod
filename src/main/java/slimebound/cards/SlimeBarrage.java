@@ -16,7 +16,7 @@ import slimebound.patches.AbstractCardEnum;
 
 
 public class SlimeBarrage extends AbstractSlimeboundCard {
-    public static final String ID = "SlimeBarrage";
+    public static final String ID = "Slimebound:SlimeBarrage";
     public static final String NAME;
     public static final String DESCRIPTION;
     public static String UPGRADED_DESCRIPTION;
@@ -39,7 +39,7 @@ public class SlimeBarrage extends AbstractSlimeboundCard {
         this.baseDamage = 4;
         this.magicNumber = this.baseMagicNumber = 2;
 
-        this.exhaust = true;
+        //this.exhaust = true;
 
     }
 

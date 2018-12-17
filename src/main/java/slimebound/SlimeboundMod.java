@@ -8,13 +8,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
+import com.evacipated.cardcrawl.modthespire.lib.SpireEnum;
 import com.megacrit.cardcrawl.actions.common.ExhaustSpecificCardAction;
 import com.megacrit.cardcrawl.actions.common.MakeTempCardInHandAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.AbstractCreature;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
+import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+import com.megacrit.cardcrawl.dungeons.TheBeyond;
+import com.megacrit.cardcrawl.dungeons.TheCity;
 import com.megacrit.cardcrawl.helpers.CardLibrary;
 import com.megacrit.cardcrawl.localization.*;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
@@ -22,25 +26,32 @@ import com.megacrit.cardcrawl.orbs.AbstractOrb;
 import com.megacrit.cardcrawl.powers.AbstractPower;
 import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.unlock.UnlockTracker;
+import com.megacrit.cardcrawl.vfx.SmokePuffEffect;
 import com.megacrit.cardcrawl.vfx.SpeechBubble;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import slimebound.cards.Grow;
-import slimebound.cards.SlimeRitual;
+import slimebound.cards.*;
 import slimebound.characters.SlimeboundCharacter;
+import slimebound.events.Hunted;
 import slimebound.helpers.PoisonVariable;
 import slimebound.helpers.SelfDamageVariable;
+import slimebound.helpers.SlimedVariable;
+import slimebound.orbs.SpawnedSlime;
 import slimebound.orbs.TorchHeadSlime;
 import slimebound.patches.AbstractCardEnum;
 import slimebound.patches.SlimeboundEnum;
 import slimebound.potions.SlimedPotion;
+import slimebound.potions.SlimyTonguePotion;
+import slimebound.potions.SpawnSlimePotion;
+import slimebound.potions.ThreeZeroPotion;
+import slimebound.powers.AcidTonguePowerUpgraded;
 import slimebound.relics.*;
 
 import java.nio.charset.StandardCharsets;
 
 
 @com.evacipated.cardcrawl.modthespire.lib.SpireInitializer
-public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSubscriber, OnCardUseSubscriber, basemod.interfaces.EditCharactersSubscriber, basemod.interfaces.EditRelicsSubscriber, basemod.interfaces.EditCardsSubscriber, basemod.interfaces.EditKeywordsSubscriber, EditStringsSubscriber, basemod.interfaces.PostDrawSubscriber, basemod.interfaces.PostPowerApplySubscriber, basemod.interfaces.OnStartBattleSubscriber {
+public class SlimeboundMod implements PostDungeonInitializeSubscriber, PostBattleSubscriber, PostInitializeSubscriber, PreMonsterTurnSubscriber, OnCardUseSubscriber, basemod.interfaces.EditCharactersSubscriber, basemod.interfaces.EditRelicsSubscriber, basemod.interfaces.EditCardsSubscriber, basemod.interfaces.EditKeywordsSubscriber, EditStringsSubscriber, basemod.interfaces.PostDrawSubscriber, basemod.interfaces.PostPowerApplySubscriber, basemod.interfaces.OnStartBattleSubscriber {
     private static final com.badlogic.gdx.graphics.Color SLIME_COLOR = com.megacrit.cardcrawl.helpers.CardHelper.getColor(25.0F, 95.0F, 25.0F);
 
     private static final String SLIMEBOUNDMOD_ASSETS_FOLDER = "SlimeboundImages";
@@ -70,6 +81,23 @@ public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSu
     public static boolean slimeTalkedSpikeS = false;
     public static int slimeTalkedDark = 0;
     public static boolean slimeTalkedCollector = false;
+    public static boolean spritealtered = false;
+    public static boolean bumpnextlime = false;
+    public static boolean disabledStrikeVFX = false;
+    public static SpawnedSlime mostRecentSlime;
+    @SpireEnum public static AbstractCard.CardTags LICK;
+    @SpireEnum public static AbstractCard.CardTags TACKLE;
+    @SpireEnum public static AbstractCard.CardTags STUDY_HEXAGHOST;
+    @SpireEnum public static AbstractCard.CardTags STUDY_AWAKENEDONE;
+    @SpireEnum public static AbstractCard.CardTags STUDY_TIMEEATER;
+    @SpireEnum public static AbstractCard.CardTags STUDY_CHAMP;
+    @SpireEnum public static AbstractCard.CardTags STUDY_COLLECTOR;
+    @SpireEnum public static AbstractCard.CardTags STUDY_SHAPES;
+    @SpireEnum public static AbstractCard.CardTags STUDY_GUARDIAN;
+    @SpireEnum public static AbstractCard.CardTags STUDY_AUTOMATON;
+    @SpireEnum public static AbstractCard.CardTags STUDY;
+
+
 
 
     public static final String getResourcePath(String resource) {
@@ -81,7 +109,6 @@ public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSu
     public SlimeboundMod() {
 
         BaseMod.subscribe(this);
-
 
         BaseMod.addColor(AbstractCardEnum.SLIMEBOUND,
                 SLIME_COLOR, SLIME_COLOR, SLIME_COLOR, SLIME_COLOR, SLIME_COLOR, SLIME_COLOR, SLIME_COLOR,
@@ -102,6 +129,36 @@ public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSu
 
     }
 
+
+    public void receivePostDungeonInitialize() {
+
+        slimeTalked = false;
+        slimeTalkedAcidL = false;
+        slimeTalkedAcidM = false;
+       slimeTalkedAcidS = false;
+        slimeTalkedSpikeL = false;
+         slimeTalkedSpikeM = false;
+         slimeTalkedSpikeS = false;
+        slimeTalkedDark = 0;
+        slimeTalkedCollector = false;
+        if (AbstractDungeon.player != null){
+            if (AbstractDungeon.player instanceof SlimeboundCharacter){
+                ((SlimeboundCharacter) AbstractDungeon.player).foughtSlimeBoss=false;
+                SlimeboundMod.logger.info("Reset Hunted event bool.");
+            }
+        }
+    }
+
+    public static int getAcidTongueBonus(AbstractCreature source){
+        int bonus = 0;
+        if (source != null) {
+            if (source.hasPower(AcidTonguePowerUpgraded.POWER_ID)) {
+                bonus = source.getPower(AcidTonguePowerUpgraded.POWER_ID).amount;
+            }
+        }
+        return bonus;
+    }
+
     public void receivePostPowerApplySubscriber(AbstractPower power, AbstractCreature target, AbstractCreature source) {
 
         if (power.ID == "Strength") {
@@ -110,7 +167,7 @@ public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSu
 
                 for (AbstractOrb o : AbstractDungeon.player.orbs) {
 
-                    if (o.ID == "TorchHeadSlime") {
+                    if (o.ID == TorchHeadSlime.ID) {
                         logger.info("Sending power amount" + power.amount);
                         ((TorchHeadSlime) o).applyUniqueFocus(power.amount);
                     }
@@ -122,7 +179,10 @@ public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSu
         }
     }
 
-
+public static String printString(String s){
+        logger.info(s);
+        return s;
+}
     public void receiveEditRelics() {
         BaseMod.addRelicToCustomPool(new AbsorbEndCombat(), AbstractCardEnum.SLIMEBOUND);
         BaseMod.addRelicToCustomPool(new AbsorbEndCombatUpgraded(), AbstractCardEnum.SLIMEBOUND);
@@ -138,190 +198,201 @@ public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSu
     public void receiveEditCards() {
         BaseMod.addDynamicVariable(new SelfDamageVariable());
         BaseMod.addDynamicVariable(new PoisonVariable());
+        BaseMod.addDynamicVariable(new SlimedVariable());
 
         BaseMod.addCard(new slimebound.cards.Defend_Slimebound());
         BaseMod.addCard(new slimebound.cards.Strike_Slimebound());
-        BaseMod.addCard(new slimebound.cards.BronzeSlime());
-        BaseMod.addCard(new slimebound.cards.PotencyGainCard());
-        BaseMod.addCard(new slimebound.cards.AttackSlime());
-        BaseMod.addCard(new slimebound.cards.TorchHeadSlime());
-        BaseMod.addCard(new slimebound.cards.StudyRandomBoss());
-        BaseMod.addCard(new slimebound.cards.CultistSlime());
-        BaseMod.addCard(new slimebound.cards.PoisonSlime());
-        BaseMod.addCard(new slimebound.cards.DebuffSlime());
-        BaseMod.addCard(new slimebound.cards.SlimingSlime());
-        BaseMod.addCard(new slimebound.cards.DuplicateSlimes());
+        BaseMod.addCard(new SplitBronze());
+        BaseMod.addCard(new LevelUp());
+        BaseMod.addCard(new SplitAttack());
+        BaseMod.addCard(new SplitTorchHead());
+        BaseMod.addCard(new StudyTheSpire());
+        BaseMod.addCard(new SplitCultist());
+        BaseMod.addCard(new SplitPoison());
+        BaseMod.addCard(new SplitShield());
+        BaseMod.addCard(new SplitSliming());
         BaseMod.addCard(new slimebound.cards.SlimeSacrifice());
-        //BaseMod.addCard(new slimebound.cards.AbsorbAll());
-        BaseMod.addCard(new slimebound.cards.AbsorbAllPotency());
-        BaseMod.addCard(new slimebound.cards.RandomSlimeCard());
-        BaseMod.addCard(new slimebound.cards.RandomSlimeCard4());
-        BaseMod.addCard(new slimebound.cards.SplittingStrike());
-        BaseMod.addCard(new slimebound.cards.SplitForLess());
+        //BaseMod.addCard(new slimebound.cards.zzzAbsorbAll());
+        BaseMod.addCard(new Overexert());
+        BaseMod.addCard(new Split());
+        BaseMod.addCard(new SuperSplit());
+        BaseMod.addCard(new DivideAndConquer());
+        BaseMod.addCard(new LeadByExample());
         BaseMod.addCard(new slimebound.cards.SlimeTap());
-        BaseMod.addCard(new slimebound.cards.CoordinatedStrike());
+        BaseMod.addCard(new Teamwork());
         BaseMod.addCard(new slimebound.cards.SlimeBarrage());
-        BaseMod.addCard(new slimebound.cards.AllTogetherNow());
-        //BaseMod.addCard(new slimebound.cards.MaxSlimes());
-        BaseMod.addCard(new slimebound.cards.QuickSpikes());
-        BaseMod.addCard(new slimebound.cards.SlimeBlockade());
-        BaseMod.addCard(new slimebound.cards.Spiked());
-        BaseMod.addCard(new slimebound.cards.MorphEverything());
-        BaseMod.addCard(new slimebound.cards.SuperCorrosiveSpit());
-        BaseMod.addCard(new slimebound.cards.SuperTackle());
-        BaseMod.addCard(new slimebound.cards.SelfDamageSlimed());
-        BaseMod.addCard(new slimebound.cards.DoubleEverything());
-        BaseMod.addCard(new slimebound.cards.MultiLick());
-        BaseMod.addCard(new slimebound.cards.Slimesplosion());
-        BaseMod.addCard(new slimebound.cards.Hardened());
+        BaseMod.addCard(new SlimeBrawl());
+        //BaseMod.addCard(new slimebound.cards.zzzMaxSlimes());
+        BaseMod.addCard(new SlimeSpikes());
+        BaseMod.addCard(new FormABlockade());
+        BaseMod.addCard(new SpikyOuterGoop());
+        BaseMod.addCard(new MassRepurpose());
+        BaseMod.addCard(new DouseInSlime());
+        BaseMod.addCard(new Chomp());
+        BaseMod.addCard(new StrayGoop());
+        BaseMod.addCard(new OozeBath());
+        //BaseMod.addCard(new zzzSoTasty());
+        BaseMod.addCard(new LivingWall());
+        BaseMod.addCard(new GangUp());
+        BaseMod.addCard(new SolidOuterGoop());
         BaseMod.addCard(new slimebound.cards.Dissolve());
         BaseMod.addCard(new slimebound.cards.DuplicatedForm());
         BaseMod.addCard(new slimebound.cards.LeechingTouch());
-        BaseMod.addCard(new slimebound.cards.RapidHeal());
-        BaseMod.addCard(new slimebound.cards.Puddle());
+        BaseMod.addCard(new Regenerate());
+        BaseMod.addCard(new FormOfPuddle());
         BaseMod.addCard(new slimebound.cards.Lick());
         BaseMod.addCard(new slimebound.cards.MegaLick());
 
-        BaseMod.addCard(new slimebound.cards.StrikeWeakPoint());
-        BaseMod.addCard(new slimebound.cards.SickeningTendril());
-       // BaseMod.addCard(new slimebound.cards.FocusedLick());
-        BaseMod.addCard(new slimebound.cards.SlimedLick());
-        BaseMod.addCard(new slimebound.cards.PoisonThorns());
-        BaseMod.addCard(new slimebound.cards.SamplingLick());
+        BaseMod.addCard(new PressTheAttack());
+        BaseMod.addCard(new SoulSicken());
+       // BaseMod.addCard(new slimebound.cards.zzzFocusedLick());
+        BaseMod.addCard(new HauntingLick());
+        BaseMod.addCard(new AcidGelatin());
+        BaseMod.addCard(new QuickLick());
         BaseMod.addCard(new slimebound.cards.TongueLash());
-        BaseMod.addCard(new slimebound.cards.LooksTasty());
+        BaseMod.addCard(new ItLooksTasty());
         BaseMod.addCard(new slimebound.cards.AcidTongue());
         BaseMod.addCard(new slimebound.cards.TendrilStrike());
         BaseMod.addCard(new slimebound.cards.PoisonLick());
-        BaseMod.addCard(new slimebound.cards.Overexertion());
-        BaseMod.addCard(new slimebound.cards.Tackle());
+        BaseMod.addCard(new slimebound.cards.WasteNot());
+        BaseMod.addCard(new HungryTackle());
         BaseMod.addCard(new slimebound.cards.FlameTackle());
-        BaseMod.addCard(new slimebound.cards.BodyBlow());
-        BaseMod.addCard(new slimebound.cards.QuickTackle());
-        BaseMod.addCard(new slimebound.cards.CorrosiveTackle());
-        BaseMod.addCard(new slimebound.cards.PoisonTackle());
+        BaseMod.addCard(new RollThrough());
+        BaseMod.addCard(new ComboTackle());
+        BaseMod.addCard(new GoopTackle());
+        BaseMod.addCard(new VenomTackle());
         BaseMod.addCard(new slimebound.cards.Grow());
         BaseMod.addCard(new slimebound.cards.Prepare());
         BaseMod.addCard(new slimebound.cards.Gluttony());
         BaseMod.addCard(new slimebound.cards.UsefulSlime());
-        BaseMod.addCard(new slimebound.cards.TendrilFlail());
+        BaseMod.addCard(new RainOfGoop());
         BaseMod.addCard(new slimebound.cards.GoopSpray());
         BaseMod.addCard(new slimebound.cards.MassFeed());
-        BaseMod.addCard(new slimebound.cards.TendrilSlash());
+        BaseMod.addCard(new SlimeSmash());
         BaseMod.addCard(new slimebound.cards.LeechEnergy());
-        BaseMod.addCard(new slimebound.cards.Leech());
-        BaseMod.addCard(new slimebound.cards.Retaliate());
+        BaseMod.addCard(new LeechLife());
+        BaseMod.addCard(new Equalize());
 
-        BaseMod.addCard(new slimebound.cards.ViolentStop());
+        BaseMod.addCard(new DisruptingSlam());
         BaseMod.addCard(new slimebound.cards.ChargeUp());
         BaseMod.addCard(new slimebound.cards.GuardianWhirl());
         BaseMod.addCard(new slimebound.cards.CorrosiveSpit());
         BaseMod.addCard(new slimebound.cards.DefensiveMode());
-        BaseMod.addCard(new slimebound.cards.PrepareSlimeCrush());
+        BaseMod.addCard(new PrepareCrush());
         BaseMod.addCard(new slimebound.cards.SlimeCrush());
-        BaseMod.addCard(new slimebound.cards.HexSlime());
+        BaseMod.addCard(new SplitGhostflame());
 
         BaseMod.addCard(new slimebound.cards.Divider());
         BaseMod.addCard(new slimebound.cards.Sear());
 
-        BaseMod.addCard(new slimebound.cards.SlimeHyperBeam());
+        BaseMod.addCard(new HyperBeamSlimedbound());
         BaseMod.addCard(new slimebound.cards.Flail());
         BaseMod.addCard(new slimebound.cards.DefensiveStance());
         BaseMod.addCard(new slimebound.cards.FaceSlap());
         BaseMod.addCard(new slimebound.cards.LastStand());
         BaseMod.addCard(new slimebound.cards.Collect());
         BaseMod.addCard(new slimebound.cards.YouAreMine());
-        BaseMod.addCard(new SlimeRitual());
+        BaseMod.addCard(new CaCaw());
         BaseMod.addCard(new slimebound.cards.DarkVoid());
-        BaseMod.addCard(new slimebound.cards.Ripple());
+        BaseMod.addCard(new slimebound.cards.Slimepotheosis());
+        BaseMod.addCard(new slimebound.cards.FinishingTackle());
+        BaseMod.addCard(new QuickStudy());
+        BaseMod.addCard(new FirmFortitude());
+        BaseMod.addCard(new Replication());
+        BaseMod.addCard(new TimeRipple());
         BaseMod.addCard(new slimebound.cards.HeadSlam());
-        BaseMod.addCard(new slimebound.cards.StopTime());
-        BaseMod.addCard(new slimebound.cards.CircleOfPower());
-        BaseMod.addCard(new slimebound.cards.SquareOfProtection());
+        BaseMod.addCard(new ManipulateTime());
+        BaseMod.addCard(new DonusPower());
+        BaseMod.addCard(new DecasProtection());
         BaseMod.addCard(new slimebound.cards.PolyBeam());
-        BaseMod.addCard(new slimebound.cards.MorphCard());
-        BaseMod.addCard(new slimebound.cards.GrowingTendril());
+        BaseMod.addCard(new Repurpose());
+        BaseMod.addCard(new GrowthPunch());
         BaseMod.addCard(new slimebound.cards.Recycling());
         BaseMod.addCard(new slimebound.cards.Recollect());
-        UnlockTracker.unlockCard("Strike_Slimebound");
-        UnlockTracker.unlockCard("Defend_Slimebound");
-        UnlockTracker.unlockCard("BronzeSlime");
-        UnlockTracker.unlockCard("PotencyGainCard");
-        UnlockTracker.unlockCard("TorchHeadSlime");
-        UnlockTracker.unlockCard("AttackSlime");
-        UnlockTracker.unlockCard("CultistSlime");
-        UnlockTracker.unlockCard("DebuffSlime");
-        UnlockTracker.unlockCard("PoisonSlime");
-        UnlockTracker.unlockCard("SlimingSlime");
-        UnlockTracker.unlockCard("SlimeSacrifice");
-        UnlockTracker.unlockCard("DuplicateSlimes");
-        //UnlockTracker.unlockCard("AbsorbAll");
-        UnlockTracker.unlockCard("AbsorbAllPotency");
-        UnlockTracker.unlockCard("RandomSlimeCard");
-        UnlockTracker.unlockCard("RandomSlimeCard4");
-        UnlockTracker.unlockCard("SplittingStrike");
-        UnlockTracker.unlockCard("SplitForLess");
-        UnlockTracker.unlockCard("SlimeTap");
-        UnlockTracker.unlockCard("TendrilFlail");
-        UnlockTracker.unlockCard("CoordinatedStrike");
-        UnlockTracker.unlockCard("SlimeBarrage");
-        UnlockTracker.unlockCard("AllTogetherNow");
-        //UnlockTracker.unlockCard("MaxSlimes");
-        UnlockTracker.unlockCard("StudyRandomBoss");
-        UnlockTracker.unlockCard("Hardened");
-        UnlockTracker.unlockCard("QuickSpikes");
-        UnlockTracker.unlockCard("Spiked");
-        UnlockTracker.unlockCard("MorphEverything");
-        UnlockTracker.unlockCard("SuperCorrosiveSpit");
-        UnlockTracker.unlockCard("SuperTackle");
-        UnlockTracker.unlockCard("SelfDamageSlimed");
-        UnlockTracker.unlockCard("DoubleEverything");
-        UnlockTracker.unlockCard("MultiLick");
-        UnlockTracker.unlockCard("Slimesplosion");
-        UnlockTracker.unlockCard("SlimeBlockade");
-        UnlockTracker.unlockCard("LeechingTouch");
-        UnlockTracker.unlockCard("DuplicatedForm");
-        UnlockTracker.unlockCard("Dissolve");
-        UnlockTracker.unlockCard("BodyBlow");
-        UnlockTracker.unlockCard("CorrosiveSpit");
-        UnlockTracker.unlockCard("RapidHeal");
-        UnlockTracker.unlockCard("Recycling");
-        UnlockTracker.unlockCard("GrowingTendril");
-        UnlockTracker.unlockCard("Recollect");
-        UnlockTracker.unlockCard("Puddle");
-        UnlockTracker.unlockCard("Gluttony");
-        UnlockTracker.unlockCard("Lick");
-        UnlockTracker.unlockCard("MegaLick");
+        UnlockTracker.unlockCard(Strike_Slimebound.ID);
+        UnlockTracker.unlockCard(Defend_Slimebound.ID);
+        UnlockTracker.unlockCard(SplitBronze.ID);
+        UnlockTracker.unlockCard(LevelUp.ID);
+        UnlockTracker.unlockCard(SplitTorchHead.ID);
+        UnlockTracker.unlockCard(SplitAttack.ID);
+        UnlockTracker.unlockCard(SplitCultist.ID);
+        UnlockTracker.unlockCard(SplitShield.ID);
+        UnlockTracker.unlockCard(SplitPoison.ID);
+        UnlockTracker.unlockCard(SplitSliming.ID);
+        UnlockTracker.unlockCard(SlimeSacrifice.ID);
+        //UnlockTracker.unlockCard(zzzAbsorbAll.ID);
+        UnlockTracker.unlockCard(Overexert.ID);
+        UnlockTracker.unlockCard(Split.ID);
+        UnlockTracker.unlockCard(SuperSplit.ID);
+        UnlockTracker.unlockCard(DivideAndConquer.ID);
+        UnlockTracker.unlockCard(LeadByExample.ID);
+        UnlockTracker.unlockCard(SlimeTap.ID);
+        UnlockTracker.unlockCard(RainOfGoop.ID);
+        UnlockTracker.unlockCard(Teamwork.ID);
+        UnlockTracker.unlockCard(SlimeBarrage.ID);
+        UnlockTracker.unlockCard(SlimeBrawl.ID);
+        //UnlockTracker.unlockCard(zzzMaxSlimes.ID);
+        UnlockTracker.unlockCard(StudyTheSpire.ID);
+        UnlockTracker.unlockCard(SolidOuterGoop.ID);
+        UnlockTracker.unlockCard(SlimeSpikes.ID);
+        UnlockTracker.unlockCard(SpikyOuterGoop.ID);
+        UnlockTracker.unlockCard(MassRepurpose.ID);
+        UnlockTracker.unlockCard(DouseInSlime.ID);
+        UnlockTracker.unlockCard(Chomp.ID);
+        UnlockTracker.unlockCard(StrayGoop.ID);
+        UnlockTracker.unlockCard(OozeBath.ID);
+        UnlockTracker.unlockCard(GangUp.ID);
+      // UnlockTracker.unlockCard(zzzSoTasty.ID);
+        UnlockTracker.unlockCard(LivingWall.ID);
+        UnlockTracker.unlockCard(FormABlockade.ID);
+        UnlockTracker.unlockCard(LeechingTouch.ID);
+        UnlockTracker.unlockCard(DuplicatedForm.ID);
+        UnlockTracker.unlockCard(FirmFortitude.ID);
+        UnlockTracker.unlockCard(Dissolve.ID);
+        UnlockTracker.unlockCard(RollThrough.ID);
+        UnlockTracker.unlockCard(CorrosiveSpit.ID);
+        UnlockTracker.unlockCard(Regenerate.ID);
+        UnlockTracker.unlockCard(Recycling.ID);
+        UnlockTracker.unlockCard(GrowthPunch.ID);
+        UnlockTracker.unlockCard(Recollect.ID);
+        UnlockTracker.unlockCard(FormOfPuddle.ID);
+        UnlockTracker.unlockCard(Gluttony.ID);
+        UnlockTracker.unlockCard(Lick.ID);
+        UnlockTracker.unlockCard(MegaLick.ID);
 
-        UnlockTracker.unlockCard("StrikeWeakPoint");
-        UnlockTracker.unlockCard("SickeningTendril");
-       // UnlockTracker.unlockCard("FocusedLick");
-        UnlockTracker.unlockCard("SlimedLick");
-        UnlockTracker.unlockCard("PoisonThorns");
-        UnlockTracker.unlockCard("SamplingLick");
-        UnlockTracker.unlockCard("TongueLash");
-        UnlockTracker.unlockCard("PoisonLick");
-        UnlockTracker.unlockCard("LooksTasty");
-        UnlockTracker.unlockCard("AcidTongue");
-        UnlockTracker.unlockCard("TendrilStrike");
-        UnlockTracker.unlockCard("Overexertion");
-        UnlockTracker.unlockCard("Tackle");
-        UnlockTracker.unlockCard("PoisonTackle");
-        UnlockTracker.unlockCard("CorrosiveTackle");
-        UnlockTracker.unlockCard("FlameTackle");
-        UnlockTracker.unlockCard("GoopSpray");
-        UnlockTracker.unlockCard("QuickTackle");
-        UnlockTracker.unlockCard("Grow");
-        UnlockTracker.unlockCard("Prepare");
-        UnlockTracker.unlockCard("MassFeed");
-        UnlockTracker.unlockCard("TendrilSlash");
-        UnlockTracker.unlockCard("LeechEnergy");
-        UnlockTracker.unlockCard("Leech");
-        UnlockTracker.unlockCard("Retaliate");
+        UnlockTracker.unlockCard(PressTheAttack.ID);
+        UnlockTracker.unlockCard(SoulSicken.ID);
+       // UnlockTracker.unlockCard(zzzFocusedLick.ID);
+        UnlockTracker.unlockCard(HauntingLick.ID);
+        UnlockTracker.unlockCard(AcidGelatin.ID);
+        UnlockTracker.unlockCard(QuickLick.ID);
+        UnlockTracker.unlockCard(Replication.ID);
+        UnlockTracker.unlockCard(QuickStudy.ID);
+        UnlockTracker.unlockCard(FinishingTackle.ID);
+        UnlockTracker.unlockCard(Slimepotheosis.ID);
+        UnlockTracker.unlockCard(TongueLash.ID);
+        UnlockTracker.unlockCard(PoisonLick.ID);
+        UnlockTracker.unlockCard(ItLooksTasty.ID);
+        UnlockTracker.unlockCard(AcidTongue.ID);
+        UnlockTracker.unlockCard(TendrilStrike.ID);
+        UnlockTracker.unlockCard(WasteNot.ID);
+        UnlockTracker.unlockCard(HungryTackle.ID);
+        UnlockTracker.unlockCard(VenomTackle.ID);
+        UnlockTracker.unlockCard(GoopTackle.ID);
+        UnlockTracker.unlockCard(FlameTackle.ID);
+        UnlockTracker.unlockCard(GoopSpray.ID);
+        UnlockTracker.unlockCard(ComboTackle.ID);
+        UnlockTracker.unlockCard(Grow.ID);
+        UnlockTracker.unlockCard(Prepare.ID);
+        UnlockTracker.unlockCard(MassFeed.ID);
+        UnlockTracker.unlockCard(SlimeSmash.ID);
+        UnlockTracker.unlockCard(LeechEnergy.ID);
+        UnlockTracker.unlockCard(LeechLife.ID);
+        UnlockTracker.unlockCard(Equalize.ID);
 
-        UnlockTracker.unlockCard("ViolentStop");
-        UnlockTracker.unlockCard("PrepareSlimeCrush");
-        UnlockTracker.unlockCard("MorphCard");
+        UnlockTracker.unlockCard(DisruptingSlam.ID);
+        UnlockTracker.unlockCard(PrepareCrush.ID);
+        UnlockTracker.unlockCard(Repurpose.ID);
 
 
     }
@@ -335,25 +406,29 @@ public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSu
 
         BaseMod.addKeyword(new String[]{"slimed"}, "Increase the next attack's damage and cause it to restore HP, consuming the effect. Half is removed at end of turn.");
 
-        BaseMod.addKeyword(new String[]{"potency"}, "Increases the effectiveness of your Spawned Slimes.");
-        BaseMod.addKeyword(new String[]{"torch-head"}, "Attacks for 9 each turn, and gains Strength when you do.");
-        BaseMod.addKeyword(new String[]{"attacking"}, "Attacks for 5 each turn.");
-        BaseMod.addKeyword(new String[]{"cultist"}, "Attacks for 6 each turn, then increases its Strength by 2.");
-        BaseMod.addKeyword(new String[]{"weakening"}, "Attacks for 2 each turn and applies 1 Weaken.");
-        BaseMod.addKeyword(new String[]{"poisoning"}, "Applies 2 Poison each turn.");
-        BaseMod.addKeyword(new String[]{"sliming"}, "Applies 2 Slimed each turn.");
-        BaseMod.addKeyword(new String[]{"plated"}, "Increases Block each turn.  Reduced when you take damage.");
-        BaseMod.addKeyword(new String[]{"self-forming"}, "Taking damage from enemy attacks grant Block for next turn.");
-        BaseMod.addKeyword(new String[]{"bronze"}, "Attacks for 6 each turn and grants you an equal amount of Block.");
+        BaseMod.addKeyword(new String[]{"potency"}, "Increases the damage of ALL of your Spawned Slimes.");
+        BaseMod.addKeyword(new String[]{"torch-head"}, "Attacks for 9 each turn, and gains damage when you gain Strength.");
+        BaseMod.addKeyword(new String[]{"bruiser"}, "Attacks for 5 each turn.");
+        BaseMod.addKeyword(new String[]{"cultist"}, "Attacks for 6 each turn, then increases it's damage by 2.");
+        BaseMod.addKeyword(new String[]{"leeching"}, "Attacks for 2 and grants you 2 Block each turn.");
+        BaseMod.addKeyword(new String[]{"poisoning"}, "Attacks for 1 and applies 2 Poison each turn .");
+        BaseMod.addKeyword(new String[]{"sliming"}, "Attacks for 1 and applies 2 Slimed each turn .");
+        BaseMod.addKeyword(new String[]{"plated"}, "Increases Block each turn. Reduced when you take damage.");
+        BaseMod.addKeyword(new String[]{"self-forming"}, "Taking damage from enemy attacks grants Block for next turn.");
+        BaseMod.addKeyword(new String[]{"bronze"}, "Attacks for 6  and grants you 6 Block each turn.");
         BaseMod.addKeyword(new String[]{"tag-team"}, "Gain 1 Energy and draw 1 card per turn.");
         BaseMod.addKeyword(new String[]{"halved"}, "Your Max HP is cut in half this combat, losing HP if you are currently above half, and preventing healing beyond half.");
         BaseMod.addKeyword(new String[]{"lick"}, "0-cost cards that apply a variety of debuffs.");
 
         BaseMod.addKeyword(new String[]{"useful"}, "1-cost card that grants 2 energy.");
-        BaseMod.addKeyword(new String[]{"ghostflame"}, "Does not attack. Gain 1 Strength and Potency, 6 Block and heal 6 HP when Absorbed. If you have 6 Ghostflames, Absorb them all.");
+        BaseMod.addKeyword(new String[]{"ghostflame"}, "Does not attack and is unaffected by Potency. Provides 1 Strength, 1 Dexterity, and 3 Potency.");
         BaseMod.addKeyword(new String[]{"burn"}, "Deals damage each turn.  Does not decay.");
-        BaseMod.addKeyword(new String[]{"transform"}, "Replace with a random new card.");
+        BaseMod.addKeyword(new String[]{"morph"}, "Replace with a random new card of your class, regardless of type. It costs 1 less.");
         BaseMod.addKeyword(new String[]{"regen"}, "Heal HP equal to Regen amount at end of turn, then reduce Regen by 1.");
+        BaseMod.addKeyword(new String[]{"purge"}, "Removed from the game entirely when played (not Exhausted).");
+        BaseMod.addKeyword(new String[]{"slow"}, "Receives 10% more damage per card played in a turn.");
+        BaseMod.addKeyword(new String[]{"tackle"}, "High-damage Attacks that also deal a small amount of damage to you.");
+
 
     }
 
@@ -371,7 +446,28 @@ public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSu
         BaseMod.loadCustomStrings(PotionStrings.class, potionStrings);
         String orbStrings = Gdx.files.internal("localization/Slimebound-OrbStrings.json").readString(String.valueOf(StandardCharsets.UTF_8));
         BaseMod.loadCustomStrings(OrbStrings.class, orbStrings);
+        String eventStrings = Gdx.files.internal("localization/Slimebound-EventStrings.json").readString(String.valueOf(StandardCharsets.UTF_8));
+        BaseMod.loadCustomStrings(EventStrings.class, eventStrings);
         logger.info("done editing strings");
+    }
+
+    public void receivePostBattle(AbstractRoom r) {
+
+        AbstractPlayer p = AbstractDungeon.player;
+        if (spritealtered){
+            AbstractDungeon.effectsQueue.add(new SmokePuffEffect(p.hb.cX, p.hb.cY));
+            // AbstractDungeon.actionManager.addToBottom(new VFXAction(new DoubleSlimeParticle(AbstractDungeon.player)));
+            if (p instanceof SlimeboundCharacter) {
+                SlimeboundCharacter hero = (SlimeboundCharacter) p;
+                hero.setRenderscale(1F);
+            }
+                p.hb_x = p.hb_x - (100 * Settings.scale);
+                p.drawX = p.drawX + (100 * Settings.scale);
+                p.hb.cX = p.hb.cX - (100 * Settings.scale);
+
+
+            spritealtered = false;
+        }
     }
 
     public void receivePostDraw(AbstractCard c) {
@@ -382,7 +478,7 @@ public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSu
             if (player.chosenClass.name() == "SLIMEBOUND") {
 
 
-                AbstractCard slimeCard = CardLibrary.getCard("UsefulSlime").makeCopy();
+                AbstractCard slimeCard = CardLibrary.getCard(UsefulSlime.ID).makeCopy();
                 AbstractDungeon.actionManager.addToBottom(new ExhaustSpecificCardAction(c, player.hand));
                 AbstractDungeon.actionManager.addToBottom(new MakeTempCardInHandAction(slimeCard));
             }
@@ -405,18 +501,18 @@ public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSu
 
         logger.info("Done loading badge Image and mod options");
 
-        BaseMod.addPotion(SlimedPotion.class, Color.GREEN, Color.GREEN, Color.GREEN, "SlimedPotion", SlimeboundEnum.SLIMEBOUND);
+        BaseMod.addPotion(SlimedPotion.class, Color.PURPLE, Color.PURPLE, Color.MAROON, SlimedPotion.POTION_ID);
+        BaseMod.addPotion(SlimyTonguePotion.class, Color.PURPLE, Color.PURPLE, Color.MAROON, SlimyTonguePotion.POTION_ID, SlimeboundEnum.SLIMEBOUND);
+        BaseMod.addPotion(SpawnSlimePotion.class, Color.GREEN, Color.FOREST, Color.BLACK, SpawnSlimePotion.POTION_ID);
+        BaseMod.addPotion(ThreeZeroPotion.class, Color.FOREST, Color.BLACK, Color.BLACK, ThreeZeroPotion.POTION_ID);
+
+        BaseMod.addEvent(Hunted.ID, Hunted.class, TheCity.ID);
+        BaseMod.addEvent(Hunted.ID, Hunted.class, TheBeyond.ID);
+
     }
 
 
-    public static boolean hasDebuff(AbstractCreature c) {
-        for (AbstractPower power : c.powers) {
-            if (power.type == AbstractPower.PowerType.DEBUFF) {
-                return true;
-            }
-        }
-        return false;
-    }
+
 
 
     public void receiveCardUsed(AbstractCard c) {
@@ -436,6 +532,7 @@ public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSu
 
     public boolean receivePreMonsterTurn(AbstractMonster abstractMonster) {
         slimeDelay = true;
+
         return true;
     }
 
@@ -443,8 +540,6 @@ public class SlimeboundMod implements PostInitializeSubscriber, PreMonsterTurnSu
         powersPlayedThisCombat = 0;
 
     }
-
-
 
 }
 

@@ -2,7 +2,9 @@ package slimebound.cards;
 
 
 
+import com.badlogic.gdx.graphics.Color;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
+import com.megacrit.cardcrawl.actions.animations.VFXAction;
 import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
 import com.megacrit.cardcrawl.actions.common.DrawCardAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
@@ -15,11 +17,12 @@ import com.megacrit.cardcrawl.powers.PoisonPower;
 import slimebound.SlimeboundMod;
 import slimebound.patches.AbstractCardEnum;
 import slimebound.powers.SlimedPower;
+import slimebound.vfx.LickEffect;
 import slimebound.vfx.SlimeDripsEffect;
 
 
 public class PoisonLick extends AbstractSlimeboundCard {
-    public static final String ID = "PoisonLick";
+    public static final String ID = "Slimebound:PoisonLick";
     public static final String NAME;
     public static final String DESCRIPTION;
     public static String UPGRADED_DESCRIPTION;
@@ -37,23 +40,26 @@ public class PoisonLick extends AbstractSlimeboundCard {
     public PoisonLick() {
 
         super(ID, NAME, SlimeboundMod.getResourcePath(IMG_PATH), COST, DESCRIPTION, TYPE, AbstractCardEnum.SLIMEBOUND, RARITY, TARGET);
+        tags.add(SlimeboundMod.LICK);
 
 
-        this.magicNumber = this.baseMagicNumber = 2;
+        this.slimed = this.baseSlimed = 4;
+        upgradeSlimed(0);
         this.exhaust = true;
-
+        this.poison = 2;
 
     }
 
 
     public void use(AbstractPlayer p, AbstractMonster m) {
 
+        AbstractDungeon.actionManager.addToBottom(new VFXAction(new LickEffect(m.hb.cX, m.hb.cY,0.6F,new Color(Color.FOREST)), 0.1F));
 
         AbstractDungeon.effectsQueue.add(new SlimeDripsEffect(m.hb.cX, m.hb.cY, 3));
+        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, p, new SlimedPower(m, p, this.slimed ), this.slimed , true, AbstractGameAction.AttackEffect.NONE));
 
-        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, p, new PoisonPower(m, p, this.magicNumber), this.magicNumber, true, AbstractGameAction.AttackEffect.POISON));
-        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, p, new SlimedPower(m, p, this.magicNumber), this.magicNumber, true, AbstractGameAction.AttackEffect.NONE));
-       // AbstractDungeon.actionManager.addToBottom(new DrawCardAction(p, 1));
+        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, p, new PoisonPower(m, p, this.poison), this.poison, true, AbstractGameAction.AttackEffect.POISON));
+        if (upgraded)  AbstractDungeon.actionManager.addToBottom(new DrawCardAction(p, 1));
 
     }
 
@@ -71,7 +77,10 @@ public class PoisonLick extends AbstractSlimeboundCard {
 
             upgradeName();
 
-            upgradeMagicNumber(1);
+           // upgradeMagicNumber(2);
+            this.poison = 2;
+            this.rawDescription = UPGRADED_DESCRIPTION;
+            this.initializeDescription();
 
         }
 
@@ -81,6 +90,7 @@ public class PoisonLick extends AbstractSlimeboundCard {
         cardStrings = CardCrawlGame.languagePack.getCardStrings(ID);
         NAME = cardStrings.NAME;
         DESCRIPTION = cardStrings.DESCRIPTION;
+        UPGRADED_DESCRIPTION = cardStrings.UPGRADE_DESCRIPTION;
 
     }
 }

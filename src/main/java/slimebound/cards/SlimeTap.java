@@ -16,7 +16,7 @@ import slimebound.patches.AbstractCardEnum;
 
 
 public class SlimeTap extends AbstractSlimeboundCard {
-    public static final String ID = "SlimeTap";
+    public static final String ID = "Slimebound:SlimeTap";
     public static final String NAME;
     private static final CardStrings cardStrings;
     public static final String DESCRIPTION;
@@ -69,7 +69,7 @@ public class SlimeTap extends AbstractSlimeboundCard {
                     numEaten = numEaten + 1;
                     AbstractDungeon.actionManager.addToBottom(new EvokeSpecificOrbAction(o));
                     AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.DrawCardAction(AbstractDungeon.player, 2));
-                    AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.GainEnergyAction(1));
+                    AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.GainEnergyAction(2));
                     if (!upgraded) {
                         return;
                     } else if (numEaten == 2) {

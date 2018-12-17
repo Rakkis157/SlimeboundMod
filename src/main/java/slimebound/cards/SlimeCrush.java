@@ -22,7 +22,7 @@ import slimebound.powers.StunnedPower;
 
 
 public class SlimeCrush extends AbstractSlimeboundCard {
-    public static final String ID = "SlimeCrush";
+    public static final String ID = "Slimebound:SlimeCrush";
     public static final String NAME;
     public static final String DESCRIPTION;
     public static String UPGRADED_DESCRIPTION;
@@ -42,7 +42,7 @@ public class SlimeCrush extends AbstractSlimeboundCard {
         super(ID, NAME, SlimeboundMod.getResourcePath(IMG_PATH), COST, DESCRIPTION, TYPE, CardColor.COLORLESS, RARITY, TARGET);
 
 
-        this.baseDamage = 60;
+        this.baseDamage = 40;
         this.exhaust = true;
         this.isEthereal = true;
 
@@ -77,7 +77,7 @@ public class SlimeCrush extends AbstractSlimeboundCard {
 
             upgradeName();
 
-            upgradeDamage(20);
+            upgradeDamage(10);
 
         }
 

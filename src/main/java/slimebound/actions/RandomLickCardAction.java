@@ -6,6 +6,10 @@ import com.megacrit.cardcrawl.actions.common.MakeTempCardInHandAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.CardLibrary;
+import slimebound.SlimeboundMod;
+import slimebound.cards.*;
+import slimebound.patches.AbstractCardEnum;
+import slimebound.patches.SlimeboundEnum;
 
 import java.util.Random;
 
@@ -22,27 +26,12 @@ public class RandomLickCardAction extends AbstractGameAction {
 
     public void update() {
 
-        AbstractCard c = null;
-        Random random = new Random();
-        Integer chosenRand = random.nextInt(5) + 1;
+        AbstractCard c;
+        do {
+            c = CardLibrary.getRandomColorSpecificCard(AbstractCardEnum.SLIMEBOUND, AbstractDungeon.cardRandomRng).makeCopy();
+        } while (!c.hasTag(SlimeboundMod.LICK));
 
-        switch (chosenRand) {
-            case 1:
-                c = CardLibrary.getCard("Lick").makeCopy();
-                break;
-            case 2:
-                c = CardLibrary.getCard("PoisonLick").makeCopy();
-                break;
-            case 3:
-                c = CardLibrary.getCard("SlimedLick").makeCopy();
-                break;
-            case 4:
-                c = CardLibrary.getCard("MegaLick").makeCopy();
-                break;
-            case 5:
-                c = CardLibrary.getCard("SamplingLick").makeCopy();
-                break;
-        }
+
 
 
         if (upgradeCard) {

@@ -13,7 +13,7 @@ import slimebound.actions.SlimeSpawnAction;
 
 
 public class HexSlimePerTurnPower extends AbstractPower {
-    public static final String POWER_ID = "HexSlimePerTurnPower";
+    public static final String POWER_ID = "Slimebound:HexSlimePerTurnPower";
     public static final String NAME = "Potency";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/nostalgia.png";
@@ -66,15 +66,15 @@ public class HexSlimePerTurnPower extends AbstractPower {
 
         flash();
 
-        AbstractDungeon.actionManager.addToBottom(new SlimeSpawnAction(new slimebound.orbs.HexSlime(), false, false));
+       // AbstractDungeon.actionManager.addToBottom(new SlimeSpawnAction(new slimebound.orbs.HexSlime(), false, false));
 
         if (this.amount <= 1) {
 
-            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, "HexSlimePerTurnPower"));
+            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, HexSlimePerTurnPower.POWER_ID));
 
         } else {
 
-            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.ReducePowerAction(this.owner, this.owner, "HexSlimePerTurnPower", 1));
+            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.ReducePowerAction(this.owner, this.owner, HexSlimePerTurnPower.POWER_ID, 1));
 
         }
     }

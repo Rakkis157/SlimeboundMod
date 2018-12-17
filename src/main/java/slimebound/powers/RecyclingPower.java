@@ -10,10 +10,13 @@ import com.megacrit.cardcrawl.powers.AbstractPower;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimebound.SlimeboundMod;
+import slimebound.actions.PlayExhausted0CostAction;
+import slimebound.actions.RandomLickCardAction;
+import slimebound.actions.ReturnRandom0Cost;
 
 
 public class RecyclingPower extends AbstractPower {
-    public static final String POWER_ID = "RecyclingPower";
+    public static final String POWER_ID = "Slimebound:RecyclingPower";
     public static final String NAME = "Potency";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/RecyclingS.png";
@@ -48,6 +51,7 @@ public class RecyclingPower extends AbstractPower {
 
     }
 
+    /*
     public void onExhaust(AbstractCard card) {
         if (card.cost == 0) {
             this.flash();
@@ -55,12 +59,28 @@ public class RecyclingPower extends AbstractPower {
         }
 
     }
+    */
+
+    public void atStartOfTurn() {
+
+        flash();
+        for (int i = 0; i < this.amount; i++) {
+
+            AbstractDungeon.actionManager.addToBottom(new PlayExhausted0CostAction(AbstractDungeon.getCurrRoom().monsters.getRandomMonster(null, true, AbstractDungeon.cardRng)));
+
+        }
+    }
 
 
     public void updateDescription() {
 
+        if (this.amount>1) {
+            this.description = DESCRIPTIONS[0] + this.amount + DESCRIPTIONS[2];
 
-        this.description = DESCRIPTIONS[0] + this.amount + DESCRIPTIONS[1];
+        }else{
+            this.description = DESCRIPTIONS[0] + this.amount + DESCRIPTIONS[1];
+
+        }
 
 
     }

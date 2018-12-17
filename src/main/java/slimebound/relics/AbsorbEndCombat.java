@@ -2,23 +2,19 @@ package slimebound.relics;
 
 import basemod.abstracts.CustomRelic;
 import com.badlogic.gdx.graphics.Texture;
-import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
 import com.megacrit.cardcrawl.actions.common.RelicAboveCreatureAction;
-import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
-import com.megacrit.cardcrawl.helpers.CardLibrary;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.orbs.AbstractOrb;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import slimebound.actions.SlimeSpawnAction;
-import slimebound.orbs.SpawnedSlime;
-import slimebound.powers.PotencyPower;
+import slimebound.orbs.*;
 
-import java.util.Random;
+import java.util.ArrayList;
 
 public class AbsorbEndCombat extends CustomRelic {
-    public static final String ID = "AbsorbEndCombat";
+    public static final String ID = "Slimebound:AbsorbEndCombat";
     public static final String IMG_PATH = "relics/heartofgoo.png";
     public static final String OUTLINE_IMG_PATH = "relics/heartofgooOutline.png";
     private static final int HP_PER_CARD = 1;
@@ -53,26 +49,30 @@ public class AbsorbEndCombat extends CustomRelic {
     }
 
     public void atBattleStartPreDraw() {
-        if(AbstractDungeon.player.currentHealth > 3) {
-            this.flash();
-            Random random = new Random();
-            Integer chosenRand = random.nextInt(4) + 1;
 
-            switch (chosenRand) {
-                case 1:
-                    AbstractDungeon.actionManager.addToBottom(new SlimeSpawnAction(new slimebound.orbs.SlimingSlime(), false, false));
-                    break;
-                case 2:
-                    AbstractDungeon.actionManager.addToBottom(new SlimeSpawnAction(new slimebound.orbs.AttackSlime(), false, false));
-                    break;
-                case 3:
-                    AbstractDungeon.actionManager.addToBottom(new SlimeSpawnAction(new slimebound.orbs.PoisonSlime(), false, false));
-                    break;
-                case 4:
-                    AbstractDungeon.actionManager.addToBottom(new SlimeSpawnAction(new slimebound.orbs.DebuffSlime(), false, false));
-                    break;
-            }
+            this.flash();
+        ArrayList<Integer> orbs = new ArrayList();
+        orbs.add(1);
+        orbs.add(2);
+        orbs.add(3);
+        orbs.add(4);
+        Integer o = orbs.get(AbstractDungeon.cardRng.random(orbs.size() - 1));
+
+        switch (o) {
+            case 1:
+                AbstractDungeon.actionManager.addToBottom(new SlimeSpawnAction(new AttackSlime(), false, false));
+                break;
+            case 2:
+                AbstractDungeon.actionManager.addToBottom(new SlimeSpawnAction(new ShieldSlime(), false, false));
+                break;
+            case 3:
+                AbstractDungeon.actionManager.addToBottom(new SlimeSpawnAction(new SlimingSlime(), false, false));
+                break;
+            case 4:
+                AbstractDungeon.actionManager.addToBottom(new SlimeSpawnAction(new PoisonSlime(), false, false));
+                break;
         }
+
 
     }
 

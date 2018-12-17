@@ -15,7 +15,7 @@ import slimebound.powers.PotencyPower;
 
 
 public class Collect extends AbstractSlimeboundCard {
-    public static final String ID = "Collect";
+    public static final String ID = "Slimebound:Collect";
     public static final String NAME;
     public static final String DESCRIPTION;
     public static String UPGRADED_DESCRIPTION;
@@ -33,7 +33,8 @@ public class Collect extends AbstractSlimeboundCard {
     public Collect() {
         super(ID, NAME, SlimeboundMod.getResourcePath(IMG_PATH), COST, DESCRIPTION, TYPE, CardColor.COLORLESS, RARITY, TARGET);
 
-
+        tags.add(SlimeboundMod.STUDY_COLLECTOR);
+        tags.add(SlimeboundMod.STUDY);
         this.baseBlock = 9;
         this.magicNumber = this.baseMagicNumber = 1;
 

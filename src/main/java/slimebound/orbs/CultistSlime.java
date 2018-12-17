@@ -3,18 +3,35 @@ package slimebound.orbs;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
-import com.megacrit.cardcrawl.actions.common.DamageAction;
-import com.megacrit.cardcrawl.cards.DamageInfo;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.orbs.AbstractOrb;
+import slimebound.actions.SlimeAutoAttack;
 import slimebound.vfx.SlimeFlareEffect;
+import slimebound.vfx.SticksParticle;
+import slimebound.vfx.SticksParticleRight;
 
 
 public class CultistSlime
         extends SpawnedSlime {
+    public static final String ID = "Slimebound:CultistSlime";
+
+    public float attachmentX;
+    public float attachmentY;
+
+    public float attachmentXr;
+    public float attachmentYr;
+
     public CultistSlime() {
-        super("CultistSlime", 6, true, new Color(.4F, .45F, .63F, 1), SlimeFlareEffect.OrbFlareColor.CULTIST, new Texture("SlimeboundImages/orbs/attackBuff.png"), "SlimeboundImages/orbs/cultist.png");
+        super(ID,-25,new Color (.55F,.55F,1.0F,100F),"images/monsters/theBottom/slimeM/skeleton.atlas","images/monsters/theBottom/slimeM/skeleton.json","idle",1.5F,new Color(81F/255F,81F/255F,1F,2F), 6,0, true, new Color(.4F, .45F, .63F, 1), SlimeFlareEffect.OrbFlareColor.CULTIST, new Texture("SlimeboundImages/orbs/attackBuff.png"), "SlimeboundImages/orbs/cultist.png");
+
+
+    }
+
+    public void postSpawnEffects(){
+        AbstractDungeon.effectList.add(new SticksParticle(this));
+        AbstractDungeon.effectList.add(new SticksParticleRight(this));
     }
 
 
@@ -25,14 +42,20 @@ public class CultistSlime
 
     public void activateEffectUnique() {
 
+        AbstractDungeon.actionManager.addToBottom(new SlimeAutoAttack(AbstractDungeon.player,this.passiveAmount, AbstractGameAction.AttackEffect.BLUNT_LIGHT,this,false,false,false,0,false,0,true));
 
-        AbstractDungeon.actionManager.addToBottom(new DamageAction(AbstractDungeon.getMonsters().getRandomMonster(true),
-                new DamageInfo(AbstractDungeon.player, this.passiveAmount, DamageInfo.DamageType.THORNS),
-                AbstractGameAction.AttackEffect.SLASH_DIAGONAL));
-        this.applyUniqueFocus(2);
 
     }
 
+    @Override
+    public void render(SpriteBatch sb) {
+        super.render(sb);
+        this.attachmentX = this.skeleton.findBone("eyeback1").getX();
+        this.attachmentY = this.skeleton.findBone("eyeback1").getY();
+
+        this.attachmentXr = this.skeleton.findBone("eyeback4").getX();
+        this.attachmentYr = this.skeleton.findBone("eyeback4").getY();
+    }
 
     public AbstractOrb makeCopy() {
         return new CultistSlime();

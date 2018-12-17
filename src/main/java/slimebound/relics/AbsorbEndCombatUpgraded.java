@@ -10,7 +10,7 @@ import com.megacrit.cardcrawl.relics.AbstractRelic;
 import slimebound.orbs.SpawnedSlime;
 
 public class AbsorbEndCombatUpgraded extends CustomRelic {
-    public static final String ID = "AbsorbEndCombatUpgraded";
+    public static final String ID = "Slimebound:AbsorbEndCombatUpgraded";
     public static final String IMG_PATH = "relics/heartofgooblack.png";
     public static final String OUTLINE_IMG_PATH = "relics/heartofgooOutline.png";
     private static final int HP_PER_CARD = 1;
@@ -53,7 +53,7 @@ public class AbsorbEndCombatUpgraded extends CustomRelic {
 
 
     public boolean canSpawn() {
-        return AbstractDungeon.player.hasRelic("AbsorbEndCombat");
+        return AbstractDungeon.player.hasRelic(AbsorbEndCombat.ID);
     }
 
     @Override

@@ -4,6 +4,7 @@ package slimebound.cards;
 
 import com.megacrit.cardcrawl.actions.animations.VFXAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
+import com.megacrit.cardcrawl.cards.DamageInfo;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
@@ -15,7 +16,7 @@ import slimebound.actions.DividerAction;
 
 
 public class Divider extends AbstractSlimeboundCard {
-    public static final String ID = "Divider";
+    public static final String ID = "Slimebound:Divider";
     public static final String NAME;
     public static final String DESCRIPTION;
     public static String UPGRADED_DESCRIPTION;
@@ -48,7 +49,7 @@ public class Divider extends AbstractSlimeboundCard {
 
         AbstractDungeon.actionManager.addToBottom(new DividerAction(
 
-                AbstractDungeon.getMonsters().getRandomMonster(true), new com.megacrit.cardcrawl.cards.DamageInfo(p, this.baseDamage), this.magicNumber));
+                AbstractDungeon.getMonsters().getRandomMonster(true), new com.megacrit.cardcrawl.cards.DamageInfo(p, this.baseDamage, DamageInfo.DamageType.NORMAL), this.magicNumber));
 
 
     }

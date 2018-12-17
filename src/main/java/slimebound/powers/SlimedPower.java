@@ -1,6 +1,7 @@
 package slimebound.powers;
 
 
+import com.badlogic.gdx.graphics.Color;
 import com.megacrit.cardcrawl.actions.animations.VFXAction;
 import com.megacrit.cardcrawl.cards.DamageInfo;
 import com.megacrit.cardcrawl.core.AbstractCreature;
@@ -10,11 +11,12 @@ import com.megacrit.cardcrawl.powers.AbstractPower;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimebound.SlimeboundMod;
+import slimebound.vfx.FakeFlashAtkImgEffect;
 import slimebound.vfx.SlimeDripsEffectPurple;
 
 
 public class SlimedPower extends AbstractPower {
-    public static final String POWER_ID = "SlimedPower";
+    public static final String POWER_ID = "Slimebound:SlimedPower";
     public static final String NAME = "UsefulSlime";
     public static PowerType POWER_TYPE = PowerType.DEBUFF;
     public static final String IMG = "powers/SlimedS.png";
@@ -59,6 +61,7 @@ public class SlimedPower extends AbstractPower {
     }
 
     public void onInitialApplication() {
+        AbstractDungeon.actionManager.addToBottom(new VFXAction( new FakeFlashAtkImgEffect(this.owner.hb.cX,this.owner.hb.cY,new Color(Color.PURPLE),1F,false,0.6F)));
 
         AbstractDungeon.actionManager.addToBottom(new VFXAction(new SlimeDripsEffectPurple(this.owner.hb.cX, this.owner.hb.cY, 4), 0.05F));
 
@@ -67,23 +70,27 @@ public class SlimedPower extends AbstractPower {
 
     public void stackPower(int stackAmount) {
         super.stackPower(stackAmount);
+        AbstractDungeon.actionManager.addToBottom(new VFXAction( new FakeFlashAtkImgEffect(this.owner.hb.cX,this.owner.hb.cY,new Color(Color.PURPLE),1F,false,0.6F)));
+
         AbstractDungeon.actionManager.addToBottom(new VFXAction(new SlimeDripsEffectPurple(this.owner.hb.cX, this.owner.hb.cY, 4), 0.05F));
 
 
     }
 
 
-    public void atEndOfRound() {
 
+    public void atStartOfTurn() {
 
-        if (this.amount <= 1) {
+        if (!this.owner.hasPower(PreventSlimeDecayPower.POWER_ID)) {
+            if (this.amount <= 1) {
 
-            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, "SlimedPower"));
+                AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, SlimedPower.POWER_ID));
 
-        } else {
+            } else {
 
-            AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.ReducePowerAction(this.owner, this.owner, "SlimedPower", this.amount/2));
+                AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.ReducePowerAction(this.owner, this.owner, SlimedPower.POWER_ID, this.amount / 2));
 
+            }
         }
 
     }
@@ -108,7 +115,8 @@ public class SlimedPower extends AbstractPower {
             if (info.type == DamageInfo.DamageType.NORMAL) {
                 this.triggered = true;
                 AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.HealAction(this.source, this.source, this.amount / 2));
-                AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, "SlimedPower"));
+
+                AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, SlimedPower.POWER_ID));
             }
 
 

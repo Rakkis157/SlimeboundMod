@@ -12,7 +12,7 @@ import slimebound.SlimeboundMod;
 
 
 public class NextTurnGainStrengthPower extends AbstractPower {
-    public static final String POWER_ID = "NextTurnGainStrengthPower";
+    public static final String POWER_ID = "Slimebound:NextTurnGainStrengthPower";
     public static final String NAME = "Potency";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/DelayedAttackSmall.png";
@@ -64,7 +64,7 @@ public class NextTurnGainStrengthPower extends AbstractPower {
         AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.ApplyPowerAction(this.owner, this.owner, new StrengthPower(this.owner, this.amount), this.amount));
 
 
-        AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, "NextTurnGainStrengthPower"));
+        AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, NextTurnGainStrengthPower.POWER_ID));
 
 
     }

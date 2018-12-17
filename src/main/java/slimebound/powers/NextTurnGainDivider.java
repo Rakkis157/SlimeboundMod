@@ -11,10 +11,11 @@ import com.megacrit.cardcrawl.powers.AbstractPower;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimebound.SlimeboundMod;
+import slimebound.cards.Divider;
 
 
 public class NextTurnGainDivider extends AbstractPower {
-    public static final String POWER_ID = "NextTurnGainDivider";
+    public static final String POWER_ID = "Slimebound:NextTurnGainDivider";
     public static final String NAME = "Potency";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/PrepareCardS.png";
@@ -67,10 +68,10 @@ public class NextTurnGainDivider extends AbstractPower {
 
         flash();
         AbstractCard c;
-        c = CardLibrary.getCard("Divider").makeCopy();
+        c = CardLibrary.getCard(Divider.ID).makeCopy();
 
         AbstractDungeon.actionManager.addToBottom(new MakeTempCardInHandAction(c, this.amount));
-        AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, "NextTurnGainDivider"));
+        AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, NextTurnGainDivider.POWER_ID));
 
     }
 

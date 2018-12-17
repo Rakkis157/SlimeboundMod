@@ -13,7 +13,7 @@ import slimebound.actions.TendrilFlailAction;
 
 
 public class SelfDamageSlimedPower extends AbstractPower {
-    public static final String POWER_ID = "SelfDamageSlimedPower";
+    public static final String POWER_ID = "Slimebound:SelfDamageSlimedPower";
     public static final String NAME = "Potency";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/excessslime.png";
@@ -53,7 +53,7 @@ public class SelfDamageSlimedPower extends AbstractPower {
     public void updateDescription() {
 
 
-        this.description = (DESCRIPTIONS[0] + this.amount + DESCRIPTIONS[1]);
+        this.description = (DESCRIPTIONS[0] + this.amount + SlimeboundMod.getAcidTongueBonus(AbstractDungeon.player) + DESCRIPTIONS[1]);
 
 
     }
@@ -63,7 +63,7 @@ public class SelfDamageSlimedPower extends AbstractPower {
                 (damageAmount > 0) && active) {
             flash();
             AbstractDungeon.actionManager.addToTop(new TendrilFlailAction(this.owner,
-                    AbstractDungeon.getMonsters().getRandomMonster(true), 1, this.amount));
+                    AbstractDungeon.getMonsters().getRandomMonster(true), 1, this.amount + SlimeboundMod.getAcidTongueBonus(AbstractDungeon.player)));
         }
 
         return damageAmount;

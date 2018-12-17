@@ -2,7 +2,9 @@ package slimebound.cards;
 
 
 
+import com.badlogic.gdx.graphics.Color;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
+import com.megacrit.cardcrawl.actions.animations.VFXAction;
 import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
 import com.megacrit.cardcrawl.actions.common.DamageAction;
 import com.megacrit.cardcrawl.actions.utility.DiscardToHandAction;
@@ -14,12 +16,13 @@ import com.megacrit.cardcrawl.localization.CardStrings;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.powers.PoisonPower;
 import com.megacrit.cardcrawl.powers.WeakPower;
+import com.megacrit.cardcrawl.vfx.BorderFlashEffect;
 import slimebound.SlimeboundMod;
 import slimebound.patches.AbstractCardEnum;
 
 
 public class TendrilStrike extends AbstractSlimeboundCard {
-    public static final String ID = "TendrilStrike";
+    public static final String ID = "Slimebound:TendrilStrike";
     public static final String NAME;
     public static final String DESCRIPTION;
     public static String UPGRADED_DESCRIPTION;
@@ -33,6 +36,8 @@ public class TendrilStrike extends AbstractSlimeboundCard {
     private static final int POWER = 6;
     private boolean returnThis;
     private static final int UPGRADE_BONUS = 3;
+    private  int timesReturnedThisTurn = 0;
+    private  int timesReturnedAllowed = 1;
 
 
     public TendrilStrike() {
@@ -40,7 +45,7 @@ public class TendrilStrike extends AbstractSlimeboundCard {
         super(ID, NAME, SlimeboundMod.getResourcePath(IMG_PATH), COST, DESCRIPTION, TYPE, AbstractCardEnum.SLIMEBOUND, RARITY, TARGET);
 
 
-        this.baseDamage = 5;
+        this.baseDamage = 3;
         this.returnThis = false;
         this.tags.add(AbstractCard.CardTags.STRIKE);
 
@@ -52,32 +57,16 @@ public class TendrilStrike extends AbstractSlimeboundCard {
 
         AbstractDungeon.actionManager.addToBottom(new DamageAction(m, new com.megacrit.cardcrawl.cards.DamageInfo(p, this.damage, this.damageTypeForTurn), AbstractGameAction.AttackEffect.BLUNT_HEAVY));
 
-        if (m.hasPower("Weakened") && m.hasPower("Poison")) {
-            this.returnThis = true;
+        if (m.hasPower("Poison")) {
+            AbstractDungeon.actionManager.addToBottom(new VFXAction(p, new BorderFlashEffect(Color.GREEN, true), 0.05F, true));
+            m.getPower("Poison").atStartOfTurn();
 
-            if (m.getPower("Weakened").amount > 1) {
-                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, p, new WeakPower(p, -1, false), -1, true, AbstractGameAction.AttackEffect.NONE));
-            } else {
-                AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(m, p, "Weakened"));
+
+            if (upgraded && m.getPower("Poison").amount > 1) {
+                m.getPower("Poison").atStartOfTurn();
+
 
             }
-
-            if (m.getPower("Poison").amount > 1) {
-                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, p, new PoisonPower(m, p, -1), -1, true, AbstractGameAction.AttackEffect.NONE));
-            } else {
-                AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(m, p, "Poison"));
-
-            }
-
-        }
-
-    }
-
-
-    public void onMoveToDiscard() {
-        if (returnThis) {
-            AbstractDungeon.actionManager.addToBottom(new DiscardToHandAction(this));
-            returnThis = false;
 
         }
     }
@@ -96,7 +85,9 @@ public class TendrilStrike extends AbstractSlimeboundCard {
 
             upgradeName();
 
-            upgradeDamage(2);
+            upgradeDamage(1);
+            this.rawDescription = UPGRADED_DESCRIPTION;
+            this.initializeDescription();
 
         }
 

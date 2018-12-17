@@ -13,13 +13,14 @@ import slimebound.orbs.SpawnedSlime;
 
 
 public class SlimeSacrificePower extends AbstractPower {
-    public static final String POWER_ID = "SlimeSacrifice";
+    public static final String POWER_ID = "Slimebound:SlimeSacrifice";
     public static final String NAME = "Slime Sacrifice";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/SlimeSacrificeS.png";
 
     public static String[] DESCRIPTIONS;
     private AbstractCreature source;
+    private int startingStack;
 
     public SlimeSacrificePower(AbstractCreature owner, int bufferAmt) {
         this.name = NAME;
@@ -51,10 +52,11 @@ public class SlimeSacrificePower extends AbstractPower {
 
                         if (o instanceof SpawnedSlime) {
 
-                            o.evokeAmount = 0;
+                            SpawnedSlime s = (SpawnedSlime)o;
+                            s.noEvokeBonus = true;
                             this.flash();
                             com.megacrit.cardcrawl.dungeons.AbstractDungeon.actionManager.addToBottom(new VFXAction(new ShieldParticleEffect(o.cX, o.cY)));
-                            com.megacrit.cardcrawl.dungeons.AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.ReducePowerAction(this.owner, this.owner, this.ID, 1));
+                            com.megacrit.cardcrawl.dungeons.AbstractDungeon.actionManager.addToTop(new com.megacrit.cardcrawl.actions.common.ReducePowerAction(this.owner, this.owner, this.ID, 1));
                             AbstractDungeon.actionManager.addToTop(new EvokeSpecificOrbAction(o));
                             return AbstractDungeon.player.currentBlock;
 
@@ -71,12 +73,6 @@ public class SlimeSacrificePower extends AbstractPower {
         this.amount += stackAmount;
     }
 
-    public void atEndOfRound() {
-
-
-        AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction(this.owner, this.owner, "SlimeSacrifice"));
-
-    }
 
     public void updateDescription() {
         if (this.amount <= 1) {

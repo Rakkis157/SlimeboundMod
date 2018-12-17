@@ -6,6 +6,10 @@ import com.megacrit.cardcrawl.actions.common.MakeTempCardInHandAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.CardLibrary;
+import slimebound.SlimeboundMod;
+import slimebound.cards.DecasProtection;
+import slimebound.cards.DonusPower;
+import slimebound.cards.PolyBeam;
 
 import java.util.Random;
 
@@ -22,21 +26,12 @@ public class RandomShapesCardAction extends AbstractGameAction {
 
     public void update() {
 
-        AbstractCard c = null;
-        Random random = new Random();
-        Integer chosenRand = random.nextInt(3) + 1;
+        AbstractCard c;
+        do {
+            c = CardLibrary.getRandomColorSpecificCard(AbstractCard.CardColor.COLORLESS, AbstractDungeon.cardRandomRng).makeCopy();
+        } while (!c.hasTag(SlimeboundMod.STUDY_SHAPES));
 
-        switch (chosenRand) {
-            case 1:
-                c = CardLibrary.getCard("CircleOfPower").makeCopy();
-                break;
-            case 2:
-                c = CardLibrary.getCard("SquareOfProtection").makeCopy();
-                break;
-            case 3:
-                c = CardLibrary.getCard("PolyBeam").makeCopy();
-                break;
-        }
+
 
 
         if (upgradeCard) {

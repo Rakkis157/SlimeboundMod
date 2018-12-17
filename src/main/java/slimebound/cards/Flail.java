@@ -5,6 +5,7 @@ package slimebound.cards;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
 import com.megacrit.cardcrawl.actions.animations.VFXAction;
 import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
+import com.megacrit.cardcrawl.actions.utility.SFXAction;
 import com.megacrit.cardcrawl.actions.utility.WaitAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
@@ -18,7 +19,7 @@ import slimebound.SlimeboundMod;
 
 
 public class Flail extends AbstractSlimeboundCard {
-    public static final String ID = "Flail";
+    public static final String ID = "Slimebound:Flail";
     public static final String NAME;
     public static final String DESCRIPTION;
     public static String UPGRADED_DESCRIPTION;
@@ -36,7 +37,8 @@ public class Flail extends AbstractSlimeboundCard {
     public Flail() {
 
         super(ID, NAME, SlimeboundMod.getResourcePath(IMG_PATH), COST, DESCRIPTION, TYPE, CardColor.COLORLESS, RARITY, TARGET);
-
+        tags.add(SlimeboundMod.STUDY_AUTOMATON);
+        tags.add(SlimeboundMod.STUDY);
 
         this.baseDamage = 5;
         this.isMultiDamage = true;
@@ -51,11 +53,14 @@ public class Flail extends AbstractSlimeboundCard {
 
     public void use(AbstractPlayer p, AbstractMonster m) {
 
+        AbstractDungeon.actionManager.addToBottom(new SFXAction("ATTACK_WHIRLWIND"));
 
         for (int i = 0; i < 2; i++) {
+            AbstractDungeon.actionManager.addToBottom(new SFXAction("ATTACK_HEAVY"));
+
             AbstractDungeon.actionManager.addToBottom(new VFXAction(p, new CleaveEffect(), 0.1F));
             AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.DamageAllEnemiesAction(p, this.multiDamage, this.damageTypeForTurn, AbstractGameAction.AttackEffect.NONE));
-            AbstractDungeon.actionManager.addToBottom(new WaitAction(0.2f));
+            //AbstractDungeon.actionManager.addToBottom(new WaitAction(0.1F));
 
 
         }

@@ -20,7 +20,7 @@ import slimebound.SlimeboundMod;
 
 
 public class LastStand extends AbstractSlimeboundCard {
-    public static final String ID = "LastStand";
+    public static final String ID = "Slimebound:LastStand";
 
     private static final CardStrings cardStrings;
     public static final String NAME;
@@ -28,7 +28,7 @@ public class LastStand extends AbstractSlimeboundCard {
     public static String UPGRADED_DESCRIPTION;
     public static final String[] EXTENDED_DESCRIPTION;
     public static final String IMG_PATH = "cards/laststand.png";
-    private static final CardType TYPE = CardType.POWER;
+    private static final CardType TYPE = CardType.SKILL;
     private static final CardRarity RARITY = CardRarity.SPECIAL;
     private static final CardTarget TARGET = CardTarget.SELF;
 
@@ -40,9 +40,11 @@ public class LastStand extends AbstractSlimeboundCard {
         super(ID, NAME, SlimeboundMod.getResourcePath(IMG_PATH), COST, DESCRIPTION, TYPE, CardColor.COLORLESS, RARITY, TARGET);
         this.magicNumber = this.baseMagicNumber = 2;
         this.isEthereal = true;
+        this.exhaust = true;
         this.poison = this.magicNumber +4;
 
-
+        tags.add(SlimeboundMod.STUDY_CHAMP);
+        tags.add(SlimeboundMod.STUDY);
     }
 /*
     public boolean canUse(AbstractPlayer p, AbstractMonster m) {

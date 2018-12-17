@@ -3,6 +3,7 @@ package slimebound.cards;
 
 
 import com.megacrit.cardcrawl.actions.animations.VFXAction;
+import com.megacrit.cardcrawl.actions.utility.SFXAction;
 import com.megacrit.cardcrawl.actions.utility.WaitAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
@@ -15,7 +16,7 @@ import slimebound.SlimeboundMod;
 
 
 public class GuardianWhirl extends AbstractSlimeboundCard {
-    public static final String ID = "GuardianWhirl";
+    public static final String ID = "Slimebound:GuardianWhirl";
     public static final String NAME;
     public static final String DESCRIPTION;
     public static String UPGRADED_DESCRIPTION;
@@ -33,7 +34,8 @@ public class GuardianWhirl extends AbstractSlimeboundCard {
     public GuardianWhirl() {
 
         super(ID, NAME, SlimeboundMod.getResourcePath(IMG_PATH), COST, DESCRIPTION, TYPE, CardColor.COLORLESS, RARITY, TARGET);
-
+        tags.add(SlimeboundMod.STUDY_GUARDIAN);
+        tags.add(SlimeboundMod.STUDY);
 
         this.baseDamage = 3;
         this.isMultiDamage = true;
@@ -46,11 +48,14 @@ public class GuardianWhirl extends AbstractSlimeboundCard {
 
     public void use(AbstractPlayer p, AbstractMonster m) {
 
+        AbstractDungeon.actionManager.addToBottom(new SFXAction("ATTACK_WHIRLWIND"));
 
         for (int i = 0; i < 4; i++) {
+            AbstractDungeon.actionManager.addToBottom(new SFXAction("ATTACK_HEAVY"));
+
             AbstractDungeon.actionManager.addToBottom(new VFXAction(p, new CleaveEffect(), 0.1F));
             AbstractDungeon.actionManager.addToBottom(new com.megacrit.cardcrawl.actions.common.DamageAllEnemiesAction(p, this.multiDamage, this.damageTypeForTurn, com.megacrit.cardcrawl.actions.AbstractGameAction.AttackEffect.NONE));
-            AbstractDungeon.actionManager.addToBottom(new WaitAction(0.2f));
+            //AbstractDungeon.actionManager.addToBottom(new WaitAction(0.1f));
         }
     }
 

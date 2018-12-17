@@ -19,7 +19,7 @@ import slimebound.SlimeboundMod;
 
 
 public class YouAreMine extends AbstractSlimeboundCard {
-    public static final String ID = "YouAreMine";
+    public static final String ID = "Slimebound:YouAreMine";
     public static final String NAME;
     public static final String DESCRIPTION;
     public static String UPGRADED_DESCRIPTION;
@@ -37,7 +37,8 @@ public class YouAreMine extends AbstractSlimeboundCard {
     public YouAreMine() {
 
         super(ID, NAME, SlimeboundMod.getResourcePath(IMG_PATH), COST, DESCRIPTION, TYPE, CardColor.COLORLESS, RARITY, TARGET);
-
+        tags.add(SlimeboundMod.STUDY_COLLECTOR);
+        tags.add(SlimeboundMod.STUDY);
 
         this.magicNumber = this.baseMagicNumber = 3;
 

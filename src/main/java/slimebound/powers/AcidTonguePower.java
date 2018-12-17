@@ -14,7 +14,7 @@ import slimebound.SlimeboundMod;
 
 
 public class AcidTonguePower extends AbstractPower {
-    public static final String POWER_ID = "AcidTonguePower";
+    public static final String POWER_ID = "Slimebound:AcidTonguePower";
     public static final String NAME = "Potency";
     public static PowerType POWER_TYPE = PowerType.BUFF;
     public static final String IMG = "powers/AcidTongueS.png";
@@ -51,7 +51,7 @@ public class AcidTonguePower extends AbstractPower {
 
 
     public void onApplyPower(AbstractPower power, AbstractCreature target, AbstractCreature source) {
-        if (power.ID == "Weakened" || power.ID == "SlimedPower") {
+        if (power.ID == SlimedPower.POWER_ID) {
             if (source == AbstractDungeon.player) {
                 AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(target, source, new PoisonPower(target, source, this.amount), this.amount, true, AbstractGameAction.AttackEffect.POISON));
             }
